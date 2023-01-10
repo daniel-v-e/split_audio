@@ -40,10 +40,11 @@ def get_duration(wave_file, samplerate=16000):
 
 
 def audio_split(arguments):
-    audio_file = args.input
-    min_silence = args.sil
+    audio_file   = args.inp
+    min_silence  = args.sil
     min_duration = args.min
     max_duration = args.max
+    split_dir    = args.out
 
     convert_file = audio_file[:-4] + '_convert.wav'
     if not convert2wav(audio_file, convert_file):
@@ -88,7 +89,7 @@ def audio_split(arguments):
         final_list[-1][0] = mean_time
         
     # split audio
-    split_dir = audio_file[:-4] + '_split'
+    # split_dir = audio_file[:-4] + '_split'
     os.makedirs(split_dir, exist_ok=True)
     final_list[0][0] = 0
     final_list[-1][1] = dur
@@ -105,7 +106,7 @@ def audio_split(arguments):
 
         split_audio_file = "{}_{}.wav".format(
             os.path.basename(audio_file)[:-4],
-            i+1)
+            str(i+1).zfill(3))
         split_audio_path = os.path.join(split_dir, split_audio_file)
         trim_audio_ffmpeg(audio_file, stime, etime, split_audio_path)
 
@@ -113,6 +114,7 @@ def audio_split(arguments):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--inp', type=str, required=True, help="Path to audio file (with extension)")
+    parser.add_argument('-o', '--out', type=str, required=True, help="Output directory")
     parser.add_argument('-m', '--min', type=float, default=60.0, help="Min chunk length (s)")
     parser.add_argument('-M', '--max', type=float, default=180.0, help="Max chunk length (s)")
     parser.add_argument('-s', '--sil', type=float, default=1.0, help="Min silence to split on (s)")
